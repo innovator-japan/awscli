@@ -1,5 +1,7 @@
 FROM alpine:3.6
 
+MAINTAINER innovatorjapan <system@innovator.jp.net>
+
 ARG version=1.14.69
 
 RUN apk -v --update add jq  python  py-pip  ca-certificates  \
