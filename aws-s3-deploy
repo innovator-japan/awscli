@@ -1,4 +1,18 @@
-#!/bin/bash
+#!/bin/sh
+set -e
+
+# check environmental variables, use variable D to prevent execution by variable expansion
+D=${AWS_DEFAULT_REGION?Environmental variable is not set}
+D=${CODE_DEPLOY_APPLICATION_NAME?Environmental variable is not set}
+D=${CODE_DEPLOY_S3_BUCKET_NAME?Environmental variable is not set}
+D=${APP_DIR?Environmental variable is not set}
+
+# set deploy group to CIRCLE_BRANCH if not specified
+if [[ -z "${CODE_DEPLOY_GROUP_NAME}" ]]; then
+  DEPLOY_GROUP=${CIRCLE_BRANCH?Environmental variable is not set}
+else
+  DEPLOY_GROUP=${CODE_DEPLOY_GROUP_NAME}
+fi
 
 ZIPNAME=${CIRCLE_BRANCH}"-"${CIRCLE_BUILD_NUM}"-"${CIRCLE_SHA1}".zip"
 
@@ -9,19 +23,18 @@ S3INFO=`aws deploy push \
           --source ${APP_DIR} | grep eTag`
 ETAG=`echo "${S3INFO}" | sed -e 's/^.*eTag=\([^ ]*\) .*$/\1/g'`
 
-echo ${ETAG};
+echo "Push apps to S3 is done. ETAG -> ${ETAG}";
 
 # create codedeploy deployment
 DEPLOY=`aws deploy create-deployment \
    --application-name ${CODE_DEPLOY_APPLICATION_NAME} \
    --s3-location bucket=${CODE_DEPLOY_S3_BUCKET_NAME},key=${ZIPNAME},bundleType=zip,eTag=${ETAG} \
-   --deployment-group-name ${CODE_DEPLOY_GROUP_NAME}`
+   --deployment-group-name ${DEPLOY_GROUP}`
 
-echo ${DEPLOY}
 
 DEPLOYMENT_ID=`echo ${DEPLOY} | jq .deploymentId | sed -e 's/"//g'`
 
-echo ${DEPLOYMENT_ID}
+echo "create codedeploy deployment is done. DEPLOYMENT_ID -> ${DEPLOYMENT_ID}"
 
 # wait for codedeploy finishes deployment
 aws deploy wait deployment-successful --deployment-id ${DEPLOYMENT_ID}

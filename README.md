@@ -73,13 +73,13 @@ workflows:
 
 You need to set following variables to use `asw-s3-deploy` command.
 
-- `AWS_DEFAULT_REGION`
+- `AWS_DEFAULT_REGION` *required*
 Set region for your codedeploy application.
-- `CODE_DEPLOY_S3_BUCKET_NAME`
+- `CODE_DEPLOY_S3_BUCKET_NAME` *required*
 Set s3 bucket for codedeploy. 
-- `CODE_DEPLOY_APPLICATION_NAME`
+- `CODE_DEPLOY_APPLICATION_NAME` *required*
 Set codedeploy application name.
-- `CODE_DEPLOY_GROUP_NAME`
-Set codedeploy application group name.
-- `APP_DIR`
+- `CODE_DEPLOY_GROUP_NAME` *optional*
+Set codedeploy application group name. `CIRCLE_BRANCH` will be used if not specified.
+- `APP_DIR` *required*
 Set application dir to deploy.
