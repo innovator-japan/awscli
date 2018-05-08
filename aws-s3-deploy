@@ -14,6 +14,13 @@ else
   DEPLOY_GROUP=${CODE_DEPLOY_GROUP_NAME}
 fi
 
+# set behavior if file exists case to DISALLOW(default) if not specified
+if [[ -z "${CODE_DEPLOY_FILE_EXISTS_BEHAVIOR}" ]]; then
+  FILE_EXISTS_BEHAVIOR=DISALLOW
+else
+  FILE_EXISTS_BEHAVIOR=${CODE_DEPLOY_FILE_EXISTS_BEHAVIOR}
+fi
+
 ZIPNAME=${CIRCLE_BRANCH}"-"${CIRCLE_BUILD_NUM}"-"${CIRCLE_SHA1}".zip"
 
 # push apps to S3
@@ -29,7 +36,8 @@ echo "Push apps to S3 is done. ETAG -> ${ETAG}";
 DEPLOY=`aws deploy create-deployment \
    --application-name ${CODE_DEPLOY_APPLICATION_NAME} \
    --s3-location bucket=${CODE_DEPLOY_S3_BUCKET_NAME},key=${ZIPNAME},bundleType=zip,eTag=${ETAG} \
-   --deployment-group-name ${DEPLOY_GROUP}`
+   --deployment-group-name ${DEPLOY_GROUP} \
+   --file-exists-behavior ${FILE_EXISTS_BEHAVIOR}`
 
 
 DEPLOYMENT_ID=`echo ${DEPLOY} | jq .deploymentId | sed -e 's/"//g'`
