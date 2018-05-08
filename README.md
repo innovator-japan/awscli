@@ -8,7 +8,7 @@ Tag is correspond to awscli version.
 - `latest`
 - `1.14.69`
 
-# How to use 
+# How to use
 
 This container provides `aws-s3-deploy` command, which allows you to deploy your apps with Codedeploy via Amazon S3.
 
@@ -43,7 +43,8 @@ jobs:
       - AWS_DEFAULT_REGION: ap-northeast-1
       - CODE_DEPLOY_S3_BUCKET_NAME: xxxx-deploy
       - CODE_DEPLOY_APPLICATION_NAME: xxxxxxx
-      - CODE_DEPLOY_GROUP_NAME: xxxxxx 
+      - CODE_DEPLOY_GROUP_NAME: xxxxxx
+      - CODE_DEPLOY_FILE_EXISTS_BEHAVIOR: xxxxxx
       - APP_DIR: .
     docker:
       - image: innovatorjapan/awscli:latest
@@ -73,13 +74,17 @@ workflows:
 
 You need to set following variables to use `asw-s3-deploy` command.
 
-- `AWS_DEFAULT_REGION`
+- `AWS_DEFAULT_REGION` *required*
 Set region for your codedeploy application.
-- `CODE_DEPLOY_S3_BUCKET_NAME`
-Set s3 bucket for codedeploy. 
-- `CODE_DEPLOY_APPLICATION_NAME`
+- `CODE_DEPLOY_S3_BUCKET_NAME` *required*
+Set s3 bucket for codedeploy.
+- `CODE_DEPLOY_APPLICATION_NAME` *required*
 Set codedeploy application name.
-- `CODE_DEPLOY_GROUP_NAME`
-Set codedeploy application group name.
-- `APP_DIR`
+- `CODE_DEPLOY_GROUP_NAME` *optional*
+Set codedeploy application group name. `CIRCLE_BRANCH` will be used if not specified.
+- `CODE_DEPLOY_FILE_EXISTS_BEHAVIOR` *optional*
+Set codedeploy behavior if exists file. `DISALLOW` will be used if not specified.
+- `APP_DIR` *required*
 Set application dir to deploy.
+
+See also: [AWS CLI Documentation](https://docs.aws.amazon.com/cli/latest/reference/deploy/create-deployment.html)
